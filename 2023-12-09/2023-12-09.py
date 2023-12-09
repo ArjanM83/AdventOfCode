@@ -36,6 +36,7 @@ class AdventOfCode:
 
         return increment
 
+
     def solve_part_1(self):
         for line in self.lines_list:
             increment = self.get_increment(self.get_differences_dict(line))
