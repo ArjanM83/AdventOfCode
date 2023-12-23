@@ -133,15 +133,6 @@ class AdventOfCode:
         self.bricks_min_z_dict[min_z].remove(brick)
         self.bricks_max_z_dict[max_z].remove(brick)
 
-    def add_brick(self, brick):
-        self.bricks_list.append(brick)
-
-        min_z = self.get_brick_min_z(brick)
-        max_z = self.get_brick_max_z(brick)
-
-        self.bricks_min_z_dict[min_z].append(brick)
-        self.bricks_max_z_dict[max_z].append(brick)
-
     def bricks_fall_downward(self):
         bricks_max_z_dict_copy = deepcopy(self.bricks_max_z_dict)
 
