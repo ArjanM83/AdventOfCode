@@ -3,9 +3,22 @@ class AdventOfCode:
         with open(filename, 'r') as f:
             self.lines_list = f.read().splitlines()
 
+        self.max_z = 0
         self.bricks_list = []
+        self.bricks_min_z_dict = {}
+        self.bricks_max_z_dict = {}
         for line in self.lines_list:
-            self.bricks_list.append([int(i) for i in line.replace('~', ',').split(',')])
+            brick = [int(i) for i in line.replace('~', ',').split(',')]
+            min_z = self.get_brick_min_z(brick)
+            max_z = self.get_brick_max_z(brick)
+
+            if max_z > self.max_z:
+                self.max_z = max_z
+
+            self.bricks_list.append(brick)
+            if min_z in self.bricks_min_z_dict:
+                self.bricks_min_z_dict[min_z].append()
+
 
     @staticmethod
     def bricks_have_x_y_overlap(b, sb):
@@ -61,6 +74,18 @@ class AdventOfCode:
             # no overlap: brick can fall down at least 1 step
             return self.get_brick_z_decrement(b)
 
+    def get_final_fallen_down_new_brick(self, b):
+        current_fallen_down_new_brick = self.get_fallen_down_new_brick(b)
+        last_fallen_down_new_brick = current_fallen_down_new_brick
+
+        while current_fallen_down_new_brick:
+            current_fallen_down_new_brick = self.get_fallen_down_new_brick(current_fallen_down_new_brick)
+
+            if current_fallen_down_new_brick:
+                last_fallen_down_new_brick = current_fallen_down_new_brick
+
+        return last_fallen_down_new_brick
+
     @staticmethod
     def get_brick_min_z(b):
         return min(b[2], b[5])
@@ -80,10 +105,10 @@ class AdventOfCode:
             another_brick_fell_down = False
 
             for check_brick in self.bricks_list:
-                fallen_down_brick = self.get_fallen_down_new_brick(check_brick)
+                fallen_down_brick = self.get_final_fallen_down_new_brick(check_brick)
 
                 if fallen_down_brick:
-                    # print(check_brick, 'fell down into', fallen_down_brick)
+                    print(check_brick, 'fell down into', fallen_down_brick)
                     another_brick_fell_down = True
                     new_bricks_list = []
 
@@ -121,6 +146,8 @@ class AdventOfCode:
                     sum_of_bricks += 1
                 else:
                     print(brick, ': not all above supported by multiple bricks')
+
+        print('final brick list:', self.bricks_list)
 
         return sum_of_bricks
 
