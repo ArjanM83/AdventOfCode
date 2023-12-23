@@ -1,3 +1,6 @@
+from copy import deepcopy
+
+
 class AdventOfCode:
     def __init__(self, filename):
         with open(filename, 'r') as f:
@@ -9,16 +12,20 @@ class AdventOfCode:
         self.bricks_max_z_dict = {}
         for line in self.lines_list:
             brick = [int(i) for i in line.replace('~', ',').split(',')]
-            min_z = self.get_brick_min_z(brick)
             max_z = self.get_brick_max_z(brick)
 
             if max_z > self.max_z:
                 self.max_z = max_z
 
             self.bricks_list.append(brick)
-            if min_z in self.bricks_min_z_dict:
-                self.bricks_min_z_dict[min_z].append()
 
+        for z in range(1, self.max_z + 1):
+            self.bricks_min_z_dict[z] = []
+            self.bricks_max_z_dict[z] = []
+
+        for brick in self.bricks_list:
+            self.bricks_min_z_dict[self.get_brick_min_z(brick)].append(brick)
+            self.bricks_max_z_dict[self.get_brick_max_z(brick)].append(brick)
 
     @staticmethod
     def bricks_have_x_y_overlap(b, sb):
@@ -64,12 +71,9 @@ class AdventOfCode:
 
         # bricks cannot fall down endlessly
         if z > 1:
-            for sb in self.bricks_list:
-                sz = self.get_brick_max_z(sb)
-                # supporting brick highest point is 1 below brick's lowest point
-                if z == sz + 1:
-                    if self.bricks_have_x_y_overlap(b, sb):
-                        return None
+            for sb in self.bricks_max_z_dict[z - 1]:
+                if self.bricks_have_x_y_overlap(b, sb):
+                    return None
 
             # no overlap: brick can fall down at least 1 step
             return self.get_brick_z_decrement(b)
@@ -98,30 +102,70 @@ class AdventOfCode:
     def get_brick_z_decrement(b):
         return [b[0], b[1], b[2] - 1, b[3], b[4], b[5] - 1]
 
+    def update_brick(self, original_brick, updated_brick):
+        updated_bricks_list = []
+
+        for brick in self.bricks_list:
+            if brick != original_brick:
+                updated_bricks_list.append(brick)
+            else:
+                updated_bricks_list.append(updated_brick)
+
+        self.bricks_list = updated_bricks_list
+
+        original_min_z = self.get_brick_min_z(original_brick)
+        original_max_z = self.get_brick_max_z(original_brick)
+        updated_min_z = self.get_brick_min_z(updated_brick)
+        updated_max_z = self.get_brick_max_z(updated_brick)
+
+        self.bricks_min_z_dict[original_min_z].remove(original_brick)
+        self.bricks_max_z_dict[original_max_z].remove(original_brick)
+
+        self.bricks_min_z_dict[updated_min_z].append(updated_brick)
+        self.bricks_max_z_dict[updated_max_z].append(updated_brick)
+
+    def remove_brick(self, brick):
+        self.bricks_list.remove(brick)
+
+        min_z = self.get_brick_min_z(brick)
+        max_z = self.get_brick_max_z(brick)
+
+        self.bricks_min_z_dict[min_z].remove(brick)
+        self.bricks_max_z_dict[max_z].remove(brick)
+
+    def add_brick(self, brick):
+        self.bricks_list.append(brick)
+
+        min_z = self.get_brick_min_z(brick)
+        max_z = self.get_brick_max_z(brick)
+
+        self.bricks_min_z_dict[min_z].append(brick)
+        self.bricks_max_z_dict[max_z].append(brick)
+
     def bricks_fall_downward(self):
-        another_brick_fell_down = True
+        bricks_max_z_dict_copy = deepcopy(self.bricks_max_z_dict)
 
-        while another_brick_fell_down:
-            another_brick_fell_down = False
-
-            for check_brick in self.bricks_list:
-                fallen_down_brick = self.get_final_fallen_down_new_brick(check_brick)
+        for z in range(1, self.max_z + 1):
+            for brick in bricks_max_z_dict_copy[z]:
+                fallen_down_brick = self.get_final_fallen_down_new_brick(brick)
 
                 if fallen_down_brick:
-                    print(check_brick, 'fell down into', fallen_down_brick)
-                    another_brick_fell_down = True
-                    new_bricks_list = []
+                    print(brick, 'fell down into', fallen_down_brick)
+                    self.update_brick(brick, fallen_down_brick)
 
-                    for original_brick in self.bricks_list:
-                        if original_brick != check_brick:
-                            new_bricks_list.append(original_brick)
-                        else:
-                            new_bricks_list.append(fallen_down_brick)
+    def get_above_supported_bricks_that_would_fall(self):
+        falling_brick_list = []
+        bricks_max_z_dict_copy = deepcopy(self.bricks_max_z_dict)
 
-                    self.bricks_list = new_bricks_list
-                    break
+        for z in range(1, self.max_z + 1):
+            for brick in bricks_max_z_dict_copy[z]:
+                fallen_down_brick = self.get_final_fallen_down_new_brick(brick)
 
-        # print('bricks stopped falling down')
+                if fallen_down_brick:
+                    falling_brick_list.append(brick)
+                    self.update_brick(brick, fallen_down_brick)
+
+        return falling_brick_list
 
     def solve_part_1(self):
         sum_of_bricks = 0
@@ -131,13 +175,12 @@ class AdventOfCode:
         for brick in self.bricks_list:
             above_supported_bricks = self.get_above_supported_bricks(brick)
             if not above_supported_bricks:
-                print(brick, ': no supported bricks')
+                print(brick, ': no above supported bricks')
                 sum_of_bricks += 1
             else:
                 all_above_bricks_supported_by_multiple_bricks = True
                 for above_supported_brick in above_supported_bricks:
                     if not self.below_supported_by_multiple_bricks(above_supported_brick):
-                        # print('brick', above_supported_brick, 'is not below supported by multiple bricks')
                         all_above_bricks_supported_by_multiple_bricks = False
                         break
 
@@ -151,9 +194,23 @@ class AdventOfCode:
 
         return sum_of_bricks
 
-    @staticmethod
-    def solve_part_2():
-        return 0
+    def solve_part_2(self):
+        sum_of_bricks = 0
+        copy_of_bricks_list = self.bricks_list.copy()
+        copy_of_bricks_min_z_dict = deepcopy(self.bricks_min_z_dict)
+        copy_of_bricks_max_z_dict = deepcopy(self.bricks_max_z_dict)
+
+        for brick in copy_of_bricks_list:
+            # reset state
+            self.bricks_list = copy_of_bricks_list.copy()
+            self.bricks_min_z_dict = deepcopy(copy_of_bricks_min_z_dict)
+            self.bricks_max_z_dict = deepcopy(copy_of_bricks_max_z_dict)
+
+            self.remove_brick(brick)
+            number_of_bricks_that_would_fall = len(self.get_above_supported_bricks_that_would_fall())
+            sum_of_bricks += number_of_bricks_that_would_fall
+
+        return sum_of_bricks
 
 
 puzzle = AdventOfCode('input.txt')
