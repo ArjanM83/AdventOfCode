@@ -25,6 +25,7 @@ class AdventOfCode:
         return f'\nResult puzzle 2: {self.result_puzzle_2}'
 
 
+# puzzle = AdventOfCode('example.txt')
 puzzle = AdventOfCode('input.txt')
 print(puzzle.solve_part_1())
 print(puzzle.solve_part_2())
