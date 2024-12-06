@@ -8,6 +8,13 @@ class AdventOfCode:
             reports = line.split(' ')
             self.adjusted_lines_list.append([int(i) for i in reports])
 
+        for y, line in enumerate(self.lines_list):
+            for x, i in enumerate(line):
+                print(y, x, i)
+
+        self.width = len(self.lines_list[0])
+        self.length = len(self.lines_list)
+
         self.result_puzzle_1 = 0
         self.result_puzzle_2 = 0
 
