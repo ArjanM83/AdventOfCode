@@ -19,13 +19,21 @@ class AdventOfCode:
         self.result_puzzle_2 = 0
 
     def solve_part_1(self):
+        for index, line_list in enumerate(self.adjusted_lines_list):
+            if 1 == 1:
+                self.result_puzzle_1 += 1
+
         return f'\nResult puzzle 1: {self.result_puzzle_1}\n'
 
     def solve_part_2(self):
+        for index, line_list in enumerate(self.adjusted_lines_list):
+            if 1 == 1:
+                self.result_puzzle_2 += 1
+
         return f'\nResult puzzle 2: {self.result_puzzle_2}'
 
 
-# puzzle = AdventOfCode('example.txt')
-puzzle = AdventOfCode('input.txt')
+puzzle = AdventOfCode('example.txt')
+# puzzle = AdventOfCode('input.txt')
 print(puzzle.solve_part_1())
 print(puzzle.solve_part_2())
