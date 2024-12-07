@@ -1,5 +1,9 @@
 class AdventOfCode:
-    def __init__(self, filename):
+    def __init__(self, example_input, filename):
+        # example
+        self.lines_list = example_input.splitlines()[1:]
+
+        # input
         with open(filename, 'r') as f:
             self.lines_list = f.read().splitlines()
 
@@ -55,6 +59,18 @@ class AdventOfCode:
         return f'\nResult puzzle 2: {self.result_puzzle_2}'
 
 
-puzzle = AdventOfCode('input.txt')
+example = """
+190: 10 19
+3267: 81 40 27
+83: 17 5
+156: 15 6
+7290: 6 8 6 15
+161011: 16 10 13
+192: 17 8 14
+21037: 9 7 18 13
+292: 11 6 16 20
+"""
+
+puzzle = AdventOfCode(example, 'input.txt')
 print(puzzle.solve_part_1())
 print(puzzle.solve_part_2())
