@@ -62,37 +62,32 @@ class AdventOfCode:
         resonance = True
         while resonance:
             try:
-                antinode_x, antinode_y = self.add_antinode(location_1, location_2, antinode_locations_list)
+                antinode = self.add_antinode(location_1, location_2, antinode_locations_list)
                 location_2 = location_1
-                location_1 = (antinode_x, antinode_y)
+                location_1 = antinode
             except TypeError:
                 resonance = False
 
-    def iterate_over_frequencies(self):
-        pass
-
-    def solve_part_1(self):
+    def add_antinodes(self, antinode_locations_list, check_for_resonance=False):
         for frequency in self.frequency_locations_list_dict:
             for frequency_location_1 in self.frequency_locations_list_dict[frequency]:
                 other_locations_list = self.frequency_locations_list_dict[frequency].copy()
                 other_locations_list.remove(frequency_location_1)
                 for frequency_location_2 in other_locations_list:
-                    self.add_antinode(frequency_location_1, frequency_location_2, self.antinode_locations_list_puzzle_1)
+                    if check_for_resonance:
+                        self.add_antinode_resonance(frequency_location_1, frequency_location_2, antinode_locations_list)
+                    else:
+                        self.add_antinode(frequency_location_1, frequency_location_2, antinode_locations_list)
 
+    def solve_part_1(self):
+        self.add_antinodes(self.antinode_locations_list_puzzle_1)
         self.antinode_locations_list_puzzle_1 = list(set(self.antinode_locations_list_puzzle_1))
         self.result_puzzle_1 = len(self.antinode_locations_list_puzzle_1)
 
         return f'\nResult puzzle 1: {self.result_puzzle_1}'
 
     def solve_part_2(self):
-        for frequency in self.frequency_locations_list_dict:
-            for frequency_location_1 in self.frequency_locations_list_dict[frequency]:
-                other_locations_list = self.frequency_locations_list_dict[frequency].copy()
-                other_locations_list.remove(frequency_location_1)
-                for frequency_location_2 in other_locations_list:
-                    self.add_antinode_resonance(
-                        frequency_location_1, frequency_location_2, self.antinode_locations_list_puzzle_2)
-
+        self.add_antinodes(self.antinode_locations_list_puzzle_2, check_for_resonance=True)
         self.antinode_locations_list_puzzle_2 = list(set(self.antinode_locations_list_puzzle_2))
         self.result_puzzle_2 = len(self.antinode_locations_list_puzzle_2)
 
