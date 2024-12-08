@@ -2,10 +2,12 @@ class AdventOfCode:
     def __init__(self, example_input, filename):
         # example
         self.lines_list = example_input.splitlines()[1:]
+        use_example = True
 
         # input
-        with open(filename, 'r') as f:
-            self.lines_list = f.read().splitlines()
+        if not use_example:
+            with open(filename, 'r') as f:
+                self.lines_list = f.read().splitlines()
 
         self.adjusted_lines_list = []
         for line in self.lines_list:
@@ -22,12 +24,17 @@ class AdventOfCode:
         self.result_puzzle_1 = 0
         self.result_puzzle_2 = 0
 
+    def position_within_mapped_area(self, x, y):
+        if 0 <= x < self.width:
+            if 0 <= y < self.length:
+                return True
+
     def solve_part_1(self):
         for index, line_list in enumerate(self.adjusted_lines_list):
             if 1 == 1:
                 self.result_puzzle_1 += 1
 
-        return f'\nResult puzzle 1: {self.result_puzzle_1}\n'
+        return f'\nResult puzzle 1: {self.result_puzzle_1}'
 
     def solve_part_2(self):
         for index, line_list in enumerate(self.adjusted_lines_list):
