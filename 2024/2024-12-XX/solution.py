@@ -2,10 +2,10 @@ class AdventOfCode:
     def __init__(self, example_input, filename):
         # example
         self.lines_list = example_input.splitlines()[1:]
-        use_example = True
+        self.use_example = True
 
         # input
-        if not use_example:
+        if not self.use_example:
             with open(filename, 'r') as f:
                 self.lines_list = f.read().splitlines()
 
