@@ -11,8 +11,7 @@ class AdventOfCode:
 
         self.adjusted_lines_list = []
         for line in self.lines_list:
-            reports = line.split(' ')
-            self.adjusted_lines_list.append([int(i) for i in reports])
+            self.adjusted_lines_list.append([int(i) for i in line])
 
         for y, line in enumerate(self.lines_list):
             for x, i in enumerate(line):
