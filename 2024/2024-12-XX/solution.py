@@ -13,10 +13,6 @@ class AdventOfCode:
         for line in self.lines_list:
             self.adjusted_lines_list.append([int(i) for i in line])
 
-        for y, line in enumerate(self.lines_list):
-            for x, i in enumerate(line):
-                print(y, x, i)
-
         self.width = len(self.lines_list[0])
         self.length = len(self.lines_list)
 
