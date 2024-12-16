@@ -25,16 +25,16 @@ class AdventOfCode:
                 return True
 
     def solve_part_1(self):
-        for index, line_list in enumerate(self.adjusted_lines_list):
-            if 1 == 1:
-                self.result_puzzle_1 += 1
+        # for index, line_list in enumerate(self.adjusted_lines_list):
+        #     if 1 == 1:
+        #         self.result_puzzle_1 += 1
 
         return f'\nResult puzzle 1: {self.result_puzzle_1}'
 
     def solve_part_2(self):
-        for index, line_list in enumerate(self.adjusted_lines_list):
-            if 1 == 1:
-                self.result_puzzle_2 += 1
+        # for index, line_list in enumerate(self.adjusted_lines_list):
+        #     if 1 == 1:
+        #         self.result_puzzle_2 += 1
 
         return f'\nResult puzzle 2: {self.result_puzzle_2}'
 
