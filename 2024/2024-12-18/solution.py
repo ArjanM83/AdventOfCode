@@ -5,7 +5,7 @@ class AdventOfCode:
     def __init__(self, example_input, filename):
         # example
         self.lines_list = example_input.splitlines()[1:]
-        self.use_example = True
+        self.use_example = False
 
         # input
         if not self.use_example:
@@ -31,21 +31,13 @@ class AdventOfCode:
         if self.use_example:
             print('coordinates list:', self.coordinates_list)
 
-        self.memory_space_dict = {}
-        for y in range(self.height):
-            for x in range(self.width):
-                if (x, y) in self.coordinates_list[:self.bytes]:
-                    self.memory_space_dict[(x, y)] = '#'
-                else:
-                    self.memory_space_dict[(x, y)] = '.'
-
         self.result_puzzle_1 = 0
         self.result_puzzle_2 = 0
 
     def position_within_mapped_area(self, x, y):
         return 0 <= x < self.width and 0 <= y < self.height
 
-    def get_minimum_steps_to_exit(self, x, y):
+    def get_minimum_steps_to_exit(self, x, y, corrupted_coordinates_list):
         queue = deque([(x, y, 0)])  # (current x, current y, current steps)
         visited = set()
         visited.add((x, y))
@@ -61,16 +53,48 @@ class AdventOfCode:
                     new_y = current_y + y_diff
 
                     if self.position_within_mapped_area(new_x, new_y):
-                        if (new_x, new_y) not in visited and self.memory_space_dict[(new_x, new_y)] == '.':
+                        if (new_x, new_y) not in visited and (new_x, new_y) not in corrupted_coordinates_list:
                             visited.add((new_x, new_y))
                             queue.append((new_x, new_y, steps + 1))
 
+    def route_to_exit_is_possible(self, x, y, corrupted_coordinates_list):
+        queue = deque([(x, y)])
+        visited = {(x, y)}
+
+        while queue:
+            current_x, current_y = queue.popleft()
+
+            if (current_x, current_y) == self.exit_position:
+                return True
+
+            for x_diff, y_diff in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
+                new_x = current_x + x_diff
+                new_y = current_y + y_diff
+
+                if self.position_within_mapped_area(new_x, new_y):
+                    if (new_x, new_y) not in visited and (new_x, new_y) not in corrupted_coordinates_list:
+                        visited.add((new_x, new_y))
+                        queue.append((new_x, new_y))
+
     def solve_part_1(self):
         x, y = self.start_position
-        self.result_puzzle_1 = self.get_minimum_steps_to_exit(x, y)
-        return f'\nResult puzzle 1: {self.result_puzzle_1}'
+        self.result_puzzle_1 = self.get_minimum_steps_to_exit(x, y, self.coordinates_list[:self.bytes])
+        return f'\nResult puzzle 1: {self.result_puzzle_1}\n'
 
     def solve_part_2(self):
+        x, y = self.start_position
+        for i in range(len(self.coordinates_list)):
+            if self.use_example:
+                print('using coordinates list:', self.coordinates_list[:-(i+1)])
+
+            if not self.route_to_exit_is_possible(x, y, self.coordinates_list[:-(i+1)]):
+                if self.use_example:
+                    print(self.coordinates_list[len(self.coordinates_list)-(i+1)])
+            else:
+                coordinates = self.coordinates_list[len(self.coordinates_list)-(i+1)]
+                self.result_puzzle_2 = f'{coordinates[0]},{coordinates[1]}'
+                break
+
         return f'\nResult puzzle 2: {self.result_puzzle_2}'
 
 
